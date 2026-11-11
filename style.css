@@ -17,3 +17,7 @@ footer{border-top:1px solid var(--line);max-width:1284px;margin:auto;padding:26p
 .spotify-links{display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap}.spotify-web{font-size:11px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}.spotify-links.compact{gap:5px;flex-wrap:nowrap}.spotify-links.compact .spotify-web{font-size:9px}
 
 .rating-votes{display:block;font-size:9px;font-weight:400;color:var(--muted);margin-top:4px}.card-bottom:has(.rating-votes){align-items:flex-start}.card-bottom .rating{text-align:right}
+
+.live-avatar{float:left;width:32px;height:32px;overflow:hidden;border-radius:50%;margin:0 9px 0 0!important;background:var(--raised)}.live-avatar img{display:block;width:100%;height:100%;object-fit:cover}
+
+.song-credits{font-size:12px;color:var(--muted);padding:10px 0 20px;line-height:1.8}

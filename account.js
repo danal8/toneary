@@ -1,5 +1,6 @@
 import {LibrarySync} from './sync-store.js';
-import {writePersonal} from './storage.js';
+import {writePersonal,prepareStorage} from './storage.js';
+prepareStorage(localStorage);
 export const SUPABASE_URL='https://odtbtugzilxsfqxlpofq.supabase.co';
 export const PUBLISHABLE_KEY='sb_publishable_ch-7C1ihpZRrxEhXFqV1xA_hXPwq61S';
 const {createClient}=window.supabase;
