@@ -1,4 +1,5 @@
 import * as api from './api.js';
+import {writePersonal} from './storage.js';
 import * as account from './account.js';
 import {mountAccount} from './account-ui.js';
 import {SearchUI} from './ui-search.js';
@@ -11,10 +12,10 @@ let library=readLibrary(),featured=[],epoch=0,activeGenre='all',searchMode='all'
 const itemMap=new Map();
 const noteDrafts=new Map();
 function readLibrary(){try{const data=JSON.parse(localStorage.getItem('toneary:library')||'{}');return data&&typeof data==='object'&&!Array.isArray(data)?data:{}}catch{return{}}}
-function persist(){try{if(account.currentUser())account.sync.edit(library);else localStorage.setItem('toneary:library',JSON.stringify(library));updateCount();return true}catch{toast('Η αποθήκευση δεν ολοκληρώθηκε. Έλεγξε τον διαθέσιμο χώρο.');return false}}
+function persist(){try{if(account.currentUser())account.sync.edit(library);else writePersonal(localStorage,'toneary:library',JSON.stringify(library));updateCount();return true}catch{toast('Η αποθήκευση δεν ολοκληρώθηκε. Έλεγξε τον διαθέσιμο χώρο.');return false}}
 function updateCount(){$('#library-count').textContent=Object.keys(library).length||''}
 function toast(message){const t=$('#toast');t.textContent=message;t.classList.add('visible');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('visible'),3500)}
-function external(url,label,cls=''){const safe=api.safeURL(url);if(!safe)return'';const uri=api.spotifyAppURI(safe);if(uri){const compact=cls==='track-spotify';return`<span class="spotify-links ${compact?'compact':''}"><a class="${cls}" href="${escape(uri)}" aria-label="Άνοιγμα στην εφαρμογή Spotify" title="Άνοιγμα στην εφαρμογή Spotify">${compact?icons.spotify:icons.spotify+'Άνοιγμα στην εφαρμογή'}</a><a class="spotify-web" href="${escape(safe)}" target="_blank" rel="noopener noreferrer" title="Άνοιγμα στο Spotify Web Player">${compact?'Web':'Web player ↗'}</a></span>`}return`<a class="${cls}" href="${escape(safe)}" target="_blank" rel="noopener noreferrer">${label}</a>`}
+function external(url,label,cls=''){const safe=api.safeURL(url);if(!safe)return'';const uri=api.spotifyAppURI(safe);if(uri){const compact=cls==='track-spotify';return`<span class="spotify-links ${compact?'compact':''}"><a class="${cls}" href="${escape(uri)}" aria-label="Άνοιγμα στην εφαρμογή Spotify" title="Άνοιγμα στην εφαρμογή Spotify">${compact?icons.spotify:icons.spotify+'Άνοιγμα στην εφαρμογή'}</a></span>`}return`<a class="${cls}" href="${escape(safe)}" target="_blank" rel="noopener noreferrer">${label}</a>`}
 function duration(ms){if(!ms)return'—';const s=Math.round(ms/1000);return`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`}
 function routeAlbum(id){return`#/album/${encodeURIComponent(id)}`}
 function routeArtist(id){return`#/artist/${encodeURIComponent(id)}`}

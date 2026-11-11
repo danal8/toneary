@@ -1,12 +1,14 @@
 import {LibrarySync} from './sync-store.js';
+import {writePersonal} from './storage.js';
 export const SUPABASE_URL='https://odtbtugzilxsfqxlpofq.supabase.co';
 export const PUBLISHABLE_KEY='sb_publishable_ch-7C1ihpZRrxEhXFqV1xA_hXPwq61S';
 const {createClient}=window.supabase;
 export const recoveryReturn=new URLSearchParams(location.hash.slice(1)).get('type')==='recovery';
 export const recoveryError=new URLSearchParams(location.hash.slice(1)).has('error');
-export const client=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{storageKey:'toneary-auth-v1',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const sessionStorageAdapter={getItem:key=>localStorage.getItem(key),setItem:(key,value)=>writePersonal(localStorage,key,value),removeItem:key=>localStorage.removeItem(key)};
+export const client=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{storageKey:'toneary-auth-v1',storage:sessionStorageAdapter,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let user=null,notify=()=>{},statusNotify=()=>{};
-async function rest(uid,path,options={}){const {data:{session},error}=await client.auth.getSession();if(error||!session||session.user.id!==uid)throw Error('Η σύνδεσή σου έληξε. Συνδέσου ξανά.');const r=await fetch(SUPABASE_URL+'/rest/v1/'+path,{...options,headers:{apikey:PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json',...options.headers},signal:AbortSignal.timeout(20000)});if(!r.ok){const data=await r.json().catch(()=>({}));throw Error(data.message||'Δεν ολοκληρώθηκε ο συγχρονισμός.')}return r.status===204?null:r.json()}
+async function rest(uid,path,options={}){const {data:{session},error}=await client.auth.getSession();if(error||!session||session.user.id!==uid)throw Object.assign(Error('Η σύνδεσή σου έληξε. Συνδέσου ξανά.'),{code:'auth_expired'});const r=await fetch(SUPABASE_URL+'/rest/v1/'+path,{...options,headers:{apikey:PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json',...options.headers},signal:AbortSignal.timeout(20000)});if(!r.ok){const data=await r.json().catch(()=>({}));throw Object.assign(Error(data.message||'Δεν ολοκληρώθηκε ο συγχρονισμός.'),{status:r.status})}const text=await r.text();return text?JSON.parse(text):null}
 export const sync=new LibrarySync({storage:localStorage,remote:{push:(uid,entries)=>rest(uid,'rpc/toneary_sync_entries',{method:'POST',body:JSON.stringify({p_entries:entries.map(({id,album,changes})=>({id,album,changes}))})}),pull:async uid=>{const rows=[];for(let offset=0;;offset+=500){const page=await rest(uid,'toneary_library?select=*&order=album_id&limit=500&offset='+offset);rows.push(...page);if(page.length<500)return rows}}},onChange:value=>notify(value),onStatus:(status,error)=>statusNotify(status,error)});
 export function currentUser(){return user}
 export async function initAccount({onLibrary,onStatus,onUser}){notify=onLibrary;statusNotify=onStatus;let generation=0;async function apply(session){const next=session?.user||null;if(next?.id===user?.id)return;const thisGeneration=++generation;user=next;onUser(next);if(next){const guest=sync.read('toneary:library');await sync.connect(next.id,guest);if(thisGeneration!==generation)return}else sync.disconnect()}
