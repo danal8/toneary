@@ -54,11 +54,13 @@ export async function discogsRating(relations=[]){
     if(rating?.count>0)return{...rating,url:`https://www.discogs.com/release/${id}`,edition:[release.country,release.year,release.formats?.[0]?.name].filter(Boolean).join(' · ')};
   }return null;
 }
+export function lyricKey(value){const greek={'α':'a','β':'v','γ':'g','δ':'d','ε':'e','ζ':'z','η':'i','θ':'th','ι':'i','κ':'k','λ':'l','μ':'m','ν':'n','ξ':'x','ο':'o','π':'p','ρ':'r','σ':'s','ς':'s','τ':'t','υ':'y','φ':'f','χ':'ch','ψ':'ps','ω':'o'};return normalize(value).replace(/\([^)]*(?:remaster|live|version)[^)]*\)/gi,'').split('').map(c=>greek[c]||c).join('').replace(/ph/g,'f').replace(/[^a-z0-9]/g,'')}
 export async function getLyrics(track,artist,album,duration){
-  const url=new URL('https://lrclib.net/api/get');url.searchParams.set('track_name',track);url.searchParams.set('artist_name',artist);if(album)url.searchParams.set('album_name',album);if(duration)url.searchParams.set('duration',Math.round(duration/1000));
-  try{return await request(url.href)}catch(error){if(error.status!==404)throw error}
-  const candidates=await request('https://lrclib.net/api/search?'+new URLSearchParams({track_name:track,artist_name:artist}));
-  return candidates.filter(c=>normalize(c.trackName)===normalize(track)&&normalize(c.artistName)===normalize(artist)).sort((a,b)=>Math.abs(a.duration-(duration/1000||a.duration))-Math.abs(b.duration-(duration/1000||b.duration)))[0]||null;
+  const exact=new URL('https://lrclib.net/api/get');exact.searchParams.set('track_name',track);exact.searchParams.set('artist_name',artist);if(album)exact.searchParams.set('album_name',album);if(duration)exact.searchParams.set('duration',Math.round(duration/1000));
+  try{const found=await request(exact.href);if(found?.plainLyrics||found?.syncedLyrics||found?.instrumental)return found}catch{}
+  const searches=[new URLSearchParams({track_name:track,artist_name:artist}),new URLSearchParams({q:track+' '+artist})];if(/[\u0370-\u03ff]/.test(track+artist))searches.push(new URLSearchParams({q:track}));
+  for(const params of searches){try{const candidates=await request('https://lrclib.net/api/search?'+params);const valid=candidates.filter(c=>lyricKey(c.trackName)===lyricKey(track)&&lyricKey(c.artistName)===lyricKey(artist)&&(c.plainLyrics||c.syncedLyrics||c.instrumental));valid.sort((a,b)=>Math.abs(a.duration-(duration/1000||a.duration))-Math.abs(b.duration-(duration/1000||b.duration)));if(valid[0])return valid[0]}catch{}}
+  return null;
 }
 export async function biography(relations=[]){
   let pages={};
