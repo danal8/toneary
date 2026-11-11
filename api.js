@@ -1,3 +1,4 @@
+import {POPULARITY_URL,PUBLIC_KEY,PUBLIC_FUNCTION_JWT} from './public-config.js';
 export const MB='https://musicbrainz.org/ws/2/';
 const DAY=86400000;
 const memory=new Map();
@@ -54,13 +55,27 @@ export async function discogsRating(relations=[]){
     if(rating?.count>0)return{...rating,url:`https://www.discogs.com/release/${id}`,edition:[release.country,release.year,release.formats?.[0]?.name].filter(Boolean).join(' · ')};
   }return null;
 }
-export function lyricKey(value){const greek={'α':'a','β':'v','γ':'g','δ':'d','ε':'e','ζ':'z','η':'i','θ':'th','ι':'i','κ':'k','λ':'l','μ':'m','ν':'n','ξ':'x','ο':'o','π':'p','ρ':'r','σ':'s','ς':'s','τ':'t','υ':'y','φ':'f','χ':'ch','ψ':'ps','ω':'o'};return normalize(value).replace(/\([^)]*(?:remaster|live|version)[^)]*\)/gi,'').split('').map(c=>greek[c]||c).join('').replace(/ph/g,'f').replace(/[^a-z0-9]/g,'')}
+export function romanizeGreek(value,phonetic=false){
+ const greek={'α':'a','β':'v','γ':'g','δ':'d','ε':'e','ζ':'z','η':'i','θ':'th','ι':'i','κ':'k','λ':'l','μ':'m','ν':'n','ξ':'x','ο':'o','π':'p','ρ':'r','σ':'s','ς':'s','τ':'t','υ':'y','φ':'f','χ':'ch','ψ':'ps','ω':'o'};
+ let text=normalize(value).replace(/ου/g,'ou');if(phonetic)text=text.replace(/αι/g,'e').replace(/ει|οι|υι/g,'i').replace(/ευ/g,'ef').replace(/αυ/g,'af');
+ return text.split('').map(c=>greek[c]||c).join('');
+}
+export function lyricKey(value){return romanizeGreek(value).replace(/\([^)]*(?:remaster|live|version)[^)]*\)/gi,'').replace(/ph/g,'f').replace(/ch/g,'h').replace(/y/g,'u').replace(/[^a-z0-9]/g,'')}
+function lyricMatches(a,b){const keys=value=>[lyricKey(value),lyricKey(romanizeGreek(value,true))];return keys(a).some(k=>keys(b).includes(k))}
+export async function dailyGenre(genre){const r=await fetch(POPULARITY_URL,{method:'POST',headers:{'Content-Type':'application/json',apikey:PUBLIC_KEY,Authorization:'Bearer '+PUBLIC_FUNCTION_JWT},body:JSON.stringify({type:'genre',genre}),signal:AbortSignal.timeout(10000)});if(!r.ok)throw Error('Discovery unavailable');const data=await r.json();return {items:(data['release-groups']||[]).map(normalizeAlbum)}}
+export async function catalog(query,{signal}={}){
+ const key='toneary:catalog:'+normalize(query);try{const c=JSON.parse(localStorage.getItem(key));if(c&&Date.now()-c.at<86400000)return c.data}catch{}
+ const r=await fetch(POPULARITY_URL,{method:'POST',headers:{'Content-Type':'application/json',apikey:PUBLIC_KEY,Authorization:'Bearer '+PUBLIC_FUNCTION_JWT},body:JSON.stringify({type:'catalog',query:romanizeGreek(query)}),signal:signal||AbortSignal.timeout(12000)});if(!r.ok)throw Error('Η αναζήτηση δεν είναι διαθέσιμη αυτή τη στιγμή.');const data=await r.json();try{localStorage.setItem(key,JSON.stringify({at:Date.now(),data}))}catch{}return data;
+}
+export function safeCover(value){return typeof value==='string'&&value.length<28000&&/^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(value)?value:safeURL(value,['coverartarchive.org','archive.org','wikimedia.org','dzcdn.net'])}
+export async function embeddedCover(url){const safe=safeURL(url,['dzcdn.net']);const hash=safe&&new URL(safe).pathname.match(/\/images\/cover\/([a-f0-9]{32})\//)?.[1];if(!hash)return null;const key='toneary:art:'+hash;try{const cover=localStorage.getItem(key);if(safeCover(cover)?.startsWith('data:'))return {cover}}catch{}try{const r=await fetch(POPULARITY_URL,{method:'POST',headers:{'Content-Type':'application/json',apikey:PUBLIC_KEY,Authorization:'Bearer '+PUBLIC_FUNCTION_JWT},body:JSON.stringify({type:'cover',hash}),signal:AbortSignal.timeout(8000)});if(!r.ok)return null;const data=await r.json();const cover=safeCover(data.cover);if(!cover?.startsWith('data:'))return null;try{localStorage.setItem(key,cover)}catch{}return{cover}}catch{return null}}
+export async function catalogArtwork(album){try{const rows=await catalog(album.artist+' '+album.title);const row=rows.find(r=>lyricMatches(r.artist,album.artist)&&lyricMatches(r.album,album.title));const cover=safeURL(row?.cover,['dzcdn.net']);return cover?{cover,coverSource:row.albumURL}:null}catch{return null}}
 export async function getLyrics(track,artist,album,duration){
-  const exact=new URL('https://lrclib.net/api/get');exact.searchParams.set('track_name',track);exact.searchParams.set('artist_name',artist);if(album)exact.searchParams.set('album_name',album);if(duration)exact.searchParams.set('duration',Math.round(duration/1000));
-  try{const found=await request(exact.href);if(found?.plainLyrics||found?.syncedLyrics||found?.instrumental)return found}catch{}
-  const searches=[new URLSearchParams({track_name:track,artist_name:artist}),new URLSearchParams({q:track+' '+artist})];if(/[\u0370-\u03ff]/.test(track+artist))searches.push(new URLSearchParams({q:track}));
-  for(const params of searches){try{const candidates=await request('https://lrclib.net/api/search?'+params);const valid=candidates.filter(c=>lyricKey(c.trackName)===lyricKey(track)&&lyricKey(c.artistName)===lyricKey(artist)&&(c.plainLyrics||c.syncedLyrics||c.instrumental));valid.sort((a,b)=>Math.abs(a.duration-(duration/1000||a.duration))-Math.abs(b.duration-(duration/1000||b.duration)));if(valid[0])return valid[0]}catch{}}
-  return null;
+ const variants=[{track,artist,album}];if(/[\u0370-\u03ff]/.test(track+artist))for(const phonetic of [false,true])variants.push({track:romanizeGreek(track,phonetic),artist:romanizeGreek(artist,phonetic),album:romanizeGreek(album,phonetic)});
+ // Query both writing systems; Greek recordings are often indexed under romanized metadata.
+ for(const v of variants){const exact=new URL('https://lrclib.net/api/get');exact.searchParams.set('track_name',v.track);exact.searchParams.set('artist_name',v.artist);if(v.album)exact.searchParams.set('album_name',v.album);if(duration)exact.searchParams.set('duration',Math.round(duration/1000));try{const found=await request(exact.href);if(found?.plainLyrics||found?.syncedLyrics||found?.instrumental)return found}catch{}}
+ for(const v of variants){for(const params of [new URLSearchParams({track_name:v.track,artist_name:v.artist}),new URLSearchParams({q:v.track+' '+v.artist}),new URLSearchParams({q:v.track})]){try{const candidates=await request('https://lrclib.net/api/search?'+params);const valid=candidates.filter(c=>lyricMatches(c.trackName,track)&&lyricMatches(c.artistName,artist)&&(c.plainLyrics||c.syncedLyrics||c.instrumental));valid.sort((a,b)=>Math.abs(a.duration-(duration/1000||a.duration))-Math.abs(b.duration-(duration/1000||b.duration)));if(valid[0])return valid[0]}catch{}}}
+ return null;
 }
 export async function biography(relations=[]){
   let pages={};

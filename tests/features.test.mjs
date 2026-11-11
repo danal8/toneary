@@ -2,7 +2,7 @@ import {test} from 'node:test';import assert from 'node:assert/strict';
 import {LibrarySync,changesBetween,overlay} from '../sync-store.js';
 import {athensDay,chooseDaily} from '../discovery.js';
 import {rank,textScore} from '../search.js';
-import {lyricKey} from '../api.js';
+import {lyricKey,romanizeGreek,getLyrics} from '../api.js';
 import {readFile} from 'node:fs/promises';import {createHash} from 'node:crypto';
 const album={id:'1b022e01-4da6-387b-8658-8678046e4cef',title:'Nevermind',artist:'Nirvana',artistId:'a',tags:['grunge']};
 function storage(){const map=new Map();return{getItem:k=>map.get(k)||null,setItem:(k,v)=>map.set(k,v),removeItem:k=>map.delete(k)}}
@@ -18,3 +18,4 @@ test('relevance and listeners rank famous matching artists above obscure names',
 test('unknown ratings never outrank real ratings',()=>{const a={title:'A',rating:{value:4.2,'votes-count':50}},b={title:'B',rating:{value:5,'votes-count':0}};assert.equal(rank([b,a],'','album','rating')[0],a)});
 test('Greek lyric matching handles accents, case and transliterated artist names',()=>{assert.equal(lyricKey('Τρύπες'),lyricKey('ΤΡΥΠΕΣ'));assert.equal(lyricKey('Διάφανα Κρίνα'),lyricKey('Diafana Krina'));assert.equal(lyricKey('Δεν Χωράς Πουθενά'),lyricKey('Δεν χωρας πουθενα'))});
 test('vendored authentication SDK matches pinned integrity',async()=>{const versions=JSON.parse(await readFile(new URL('../vendor/versions.json',import.meta.url)));const data=await readFile(new URL('../vendor/supabase-2.119.0.js',import.meta.url));assert.equal(createHash('sha256').update(data).digest('hex'),versions['@supabase/supabase-js'].sha256)});
+test('Greek lyric searches query romanized metadata and reject a different artist',async()=>{const original=globalThis.fetch,queries=[];globalThis.fetch=async url=>{const u=new URL(url);queries.push(u);if(u.pathname.endsWith('/get'))return new Response('{}',{status:404});const latin=u.searchParams.get('track_name')==='meres argias';return new Response(JSON.stringify(latin?[{id:1,trackName:'Meres Argias',artistName:'Different Band',plainLyrics:'wrong',duration:138},{id:2,trackName:'Meres Argias',artistName:'Diafana Krina',plainLyrics:'fixture',duration:138}]:[]),{status:200})};try{const result=await getLyrics('Μέρες αργίας','Διάφανα Κρίνα','',138000);assert.equal(result.id,2);assert.ok(queries.some(u=>u.searchParams.get('track_name')==='meres argias'));assert.equal(romanizeGreek('Πουθενά'),'pouthena');assert.equal(lyricKey('Τα χρόνια μου'),lyricKey('Ta Hronia Mou'))}finally{globalThis.fetch=original}});

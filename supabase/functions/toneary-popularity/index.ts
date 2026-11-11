@@ -14,6 +14,22 @@ Deno.serve(async(req:Request)=>{
  if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors});
  if(req.method!=="POST")return json({error:"Method not allowed"},405);
  try{if(Number(req.headers.get('content-length')||0)>15000)return json({error:"Batch too large"},413);const body=await req.json();
+  if(body.type==='cover'){
+   if(typeof body.hash!=='string'||!/^[a-f0-9]{32}$/.test(body.hash))return json({error:'Invalid artwork'},400);
+   const key='cover:'+body.hash;const saved=cache.get(key);if(saved&&Date.now()-saved.at<21600000)return json(saved.data);
+   const r=await fetch('https://cdn-images.dzcdn.net/images/cover/'+body.hash+'/200x200-000000-80-0-0.jpg',{signal:AbortSignal.timeout(6000)});if(!r.ok||!r.headers.get('content-type')?.startsWith('image/jpeg'))throw Error('Artwork unavailable');const bytes=new Uint8Array(await r.arrayBuffer());if(bytes.length>20000||bytes[0]!==255||bytes[1]!==216)throw Error('Invalid artwork');const data={cover:'data:image/jpeg;base64,'+btoa(String.fromCharCode(...bytes))};if(cache.size>200)cache.delete(cache.keys().next().value!);cache.set(key,{at:Date.now(),data});return json(data);
+  }
+  if(body.type==='genre'){
+   if(typeof body.genre!=='string'||body.genre.length<2||body.genre.length>80||/["\\]/.test(body.genre))return json({error:'Invalid genre'},400);
+   const key='genre:'+body.genre.toLowerCase();const saved=cache.get(key);if(saved&&Date.now()-saved.at<21600000)return json(saved.data);
+   const query='tag:"'+body.genre+'" AND primarytype:album AND NOT secondarytype:compilation AND NOT secondarytype:live';const r=await fetch('https://musicbrainz.org/ws/2/release-group/?'+new URLSearchParams({query,limit:'100',fmt:'json'}),{headers:{'User-Agent':'Toneary/1.2 (https://github.com/danal8/toneary)'},signal:AbortSignal.timeout(7500)});if(!r.ok)throw Error('Discovery unavailable');const raw=await r.json();const data={'release-groups':raw['release-groups']||[]};if(cache.size>200)cache.delete(cache.keys().next().value!);cache.set(key,{at:Date.now(),data});return json(data);
+  }
+  if(body.type==='catalog'){
+   if(typeof body.query!=='string'||body.query.trim().length<2||body.query.length>180)return json({error:'Invalid query'},400);
+   const key='catalog:'+body.query.toLowerCase();const saved=cache.get(key);if(saved&&Date.now()-saved.at<21600000)return json(saved.data);
+   const r=await fetch('https://api.deezer.com/search?'+new URLSearchParams({q:body.query,limit:'30'}),{signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error('Catalog unavailable');const raw=await r.json();if(raw.error)throw Error('Catalog unavailable');
+   const data=(raw.data||[]).map((x:any)=>({title:x.title,artist:x.artist?.name||'',album:x.album?.title||'',cover:x.album?.cover_big||'',albumURL:x.album?.id?'https://www.deezer.com/album/'+x.album.id:''}));if(cache.size>200)cache.delete(cache.keys().next().value!);cache.set(key,{at:Date.now(),data});return json(data);
+  }
   if(body.type==='recording-search'){if(typeof body.query!=='string'||body.query.length<1||body.query.length>180)return json({error:'Invalid query'},400);const key='recording-search:'+body.query.toLowerCase();const saved=cache.get(key);if(saved&&Date.now()-saved.at<21600000)return json(saved.data);const r=await fetch('https://labs.api.listenbrainz.org/recording-search/json?'+new URLSearchParams({query:body.query}),{signal:AbortSignal.timeout(10000),headers:{'User-Agent':'Toneary/1.1 (https://github.com/danal8/toneary)'}});if(!r.ok)return json([],200);const raw=await r.json();const data=Array.isArray(raw)?raw.slice(0,40):[];if(cache.size>200)cache.delete(cache.keys().next().value!);cache.set(key,{at:Date.now(),data});return json(data)}
   if(body.type==='snapshots'){if(!Array.isArray(body.artists)||body.artists.length>12||body.artists.some((a:any)=>!a||typeof a.id!=='string'||!a.id.match(/^[a-f0-9-]{36}$/i)||typeof a.name!=='string'||a.name.length>200))return json({error:'Invalid artists'},400);const key='snapshots:'+JSON.stringify(body.artists);const saved=cache.get(key);if(saved&&Date.now()-saved.at<21600000)return json(saved.data);const data=await portraits(body.artists);if(cache.size>200)cache.delete(cache.keys().next().value!);cache.set(key,{at:Date.now(),data});return json(data)}
   const type=body.type as keyof typeof kinds;if(!Object.hasOwn(kinds,type)||!Array.isArray(body.ids)||body.ids.length<1||body.ids.length>100||body.ids.some((id:unknown)=>typeof id!=="string"||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id)))return json({error:"Invalid batch"},400);
