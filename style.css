@@ -21,3 +21,6 @@ footer{border-top:1px solid var(--line);max-width:1284px;margin:auto;padding:26p
 .live-avatar{float:left;width:32px;height:32px;overflow:hidden;border-radius:50%;margin:0 9px 0 0!important;background:var(--raised)}.live-avatar img{display:block;width:100%;height:100%;object-fit:cover}
 
 .song-credits{font-size:12px;color:var(--muted);padding:10px 0 20px;line-height:1.8}
+.artist-header>.artist-avatar{width:100%;height:auto;aspect-ratio:1;font-size:64px}.artist-header>.artist-avatar img{display:block;width:100%;height:100%;object-fit:cover}
+
+.credit-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start}.credit-group{padding:20px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}.credit-group h3{font-size:15px;margin:0 0 13px;color:var(--soft)}.credit-group ul{margin:0;padding:0;list-style:none}.credit-group li{padding:12px 0;border-top:1px solid var(--line)}.credit-person strong,.credit-person>a{display:block;font-size:13px;font-weight:600}.credit-person span{display:block;font-size:11px;line-height:1.7;color:var(--muted);margin-top:4px}.credit-tracks{margin-top:8px;font-size:11px;color:var(--muted)}.credit-tracks summary{cursor:pointer}.credit-tracks p{line-height:1.7;margin:8px 0 0}@media(max-width:760px){.credit-groups{grid-template-columns:1fr;gap:15px}.credit-group{padding:16px}}

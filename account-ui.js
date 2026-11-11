@@ -1,4 +1,4 @@
-import * as account from './account.js';
+import * as account from './account.js?v=7';
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const labels={guest:'Τοπική δισκοθήκη',syncing:'Συγχρονισμός…',pending:'Αλλαγές σε αναμονή',saved:'Συγχρονισμένα',offline:'Δεν υπάρχει σύνδεση στο διαδίκτυο',error:'Ο συγχρονισμός δεν ολοκληρώθηκε',storage:'Δεν υπάρχει αρκετός χώρος στη συσκευή',auth:'Η σύνδεση έληξε — συνδέσου ξανά'};
 export function mountAccount({onLibrary,onUser,toast}){

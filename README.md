@@ -53,3 +53,5 @@ Greek live search preserves the original query and resolves MusicBrainz artist i
 Disposable public metadata caches are capped at approximately 750,000 characters, with individual entries over 300,000 characters skipped. A one-time startup migration removes only Toneary public caches before authentication code runs; personal libraries, login sessions and pending edits are preserved. The service worker revalidates resources and refreshes an already-controlled page after an update.
 
 See [LYRICS-SOURCES.md](LYRICS-SOURCES.md) for verified examples and professional lyrics/credits options; no paid provider is currently active.
+
+Personal sessions, guest/account libraries and durable outboxes now use IndexedDB, separate from localStorage’s small per-origin limit. Existing Toneary personal keys are copied transactionally before their legacy values are removed. Auth writes await commit, sync waits for queued personal storage writes before upload and before reporting saved. Public metadata caches remain disposable and bounded in localStorage.

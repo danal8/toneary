@@ -1,5 +1,5 @@
-import * as search from './search.js';
-import * as api from './api.js';
+import * as search from './search.js?v=7';
+import * as api from './api.js?v=7';
 export class SearchUI{
  constructor({main,searchForm,back,grid,images,escape,loading,empty,errorView,external,icons,duration,goSearch}){Object.assign(this,{main,searchForm,back,grid,images,escape,loading,empty,errorView,external,icons,duration,goSearch});this.items=[];this.offset=0;this.snapshots=new Map()}
  filtersFromURL(){const p=new URLSearchParams(location.hash.split('/').slice(2).join('/'));const year=p.get('year')||'';return{genre:(p.get('genre')||'').slice(0,80),year:/^\d{4}$/.test(year)?year:'',rating:[3,3.5,4,4.5].includes(Number(p.get('rating')))?Number(p.get('rating')):0,sort:['smart','popular','rating','year'].includes(p.get('sort'))?p.get('sort'):'smart'}}

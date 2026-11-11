@@ -1,5 +1,5 @@
-import {writePublic} from './storage.js';
-import {POPULARITY_URL,PUBLIC_KEY,PUBLIC_FUNCTION_JWT} from './public-config.js';
+import {writePublic} from './storage.js?v=7';
+import {POPULARITY_URL,PUBLIC_KEY,PUBLIC_FUNCTION_JWT} from './public-config.js?v=7';
 export const MB='https://musicbrainz.org/ws/2/';
 const DAY=86400000;
 const memory=new Map();

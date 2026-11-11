@@ -1,0 +1,14 @@
+const isPersonal=key=>key.startsWith('toneary-auth-v1')||key==='toneary:library'||key.startsWith('toneary:account:')||key.startsWith('toneary:outbox:');
+function transactionDone(tx){return new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||Error('Δεν αποθηκεύτηκαν τα προσωπικά δεδομένα.'));tx.onabort=()=>reject(tx.error||Error('Η αποθήκευση διακόπηκε.'))})}
+export async function openPersonalStorage(legacy=localStorage){
+ if(!globalThis.indexedDB)throw Error('Ο browser δεν επιτρέπει μόνιμη αποθήκευση για το Toneary.');
+ const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('toneary-private-v1',1);r.onupgradeneeded=()=>r.result.createObjectStore('entries');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
+ const load=db.transaction('entries','readonly'),store=load.objectStore('entries');const [keys,values]=await Promise.all([new Promise((resolve,reject)=>{const r=store.getAllKeys();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)}),new Promise((resolve,reject)=>{const r=store.getAll();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})]);const memory=new Map(keys.map((key,i)=>[String(key),values[i]]));
+ const pending=new Set();let lastError=null;
+ function persist(key,value,remove=false){const tx=db.transaction('entries','readwrite');if(remove)tx.objectStore('entries').delete(key);else tx.objectStore('entries').put(value,key);const job=transactionDone(tx);pending.add(job);job.then(()=>pending.delete(job),error=>{pending.delete(job);lastError=error});return job}
+ const storage={getItem:key=>memory.get(key)??null,async getDurable(key){const tx=db.transaction('entries','readonly');const value=await new Promise((resolve,reject)=>{const r=tx.objectStore('entries').get(key);r.onsuccess=()=>resolve(r.result??null);r.onerror=()=>reject(r.error)});if(value===null)memory.delete(key);else memory.set(key,value);return value},setItem(key,value){memory.set(key,String(value));persist(key,String(value))},removeItem(key){memory.delete(key);persist(key,null,true)},async flush(){const jobs=[...pending];if(jobs.length)await Promise.all(jobs);if(lastError){const error=lastError;lastError=null;throw error}},async setDurable(key,value){memory.set(key,String(value));await persist(key,String(value))},async removeDurable(key){memory.delete(key);await persist(key,null,true)},close:()=>db.close()};
+ // Migrate only Toneary's personal keys. Never remove a legacy value until its transaction commits.
+ let legacyKeys=[];try{legacyKeys=Object.keys(legacy).filter(isPersonal)}catch{}
+ for(const key of legacyKeys){try{const value=legacy.getItem(key);if(value===null)continue;if(!memory.has(key)){await storage.setDurable(key,value);legacy.removeItem(key)}else if(memory.get(key)===value)legacy.removeItem(key)}catch{}}
+ return storage;
+}

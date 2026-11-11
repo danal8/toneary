@@ -1,5 +1,5 @@
-import * as api from './api.js';
-import {popularity} from './search.js';
+import * as api from './api.js?v=7';
+import {popularity} from './search.js?v=7';
 export function athensDay(date=new Date()){const p=new Intl.DateTimeFormat('en',{timeZone:'Europe/Athens',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);return['year','month','day'].map(k=>p.find(v=>v.type===k).value).join('-')}
 export function hash(text){let n=2166136261;for(const c of text)n=Math.imul(n^c.charCodeAt(0),16777619);return n>>>0}
 export function profile(library){const entries=Object.values(library).filter(e=>e.favorite||e.rating>=4);const tags=new Map();for(const e of entries)for(const t of e.album?.tags||[])tags.set(t,(tags.get(t)||0)+(e.favorite?3:1));return{entries,tags:[...tags].sort((a,b)=>b[1]-a[1]).map(([t])=>t),artists:[...new Map(entries.filter(e=>e.album?.artistId).map(e=>[e.album.artistId,{id:e.album.artistId,name:e.album.artist}])).values()]}}

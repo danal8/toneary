@@ -1,6 +1,6 @@
-import {writePublic} from './storage.js';
-import * as api from './api.js';
-import {POPULARITY_URL,PUBLIC_KEY,PUBLIC_FUNCTION_JWT} from './public-config.js';
+import {writePublic} from './storage.js?v=7';
+import * as api from './api.js?v=7';
+import {POPULARITY_URL,PUBLIC_KEY,PUBLIC_FUNCTION_JWT} from './public-config.js?v=7';
 const types={album:['release-group','release_group_mbids','release_group_mbid'],artist:['artist','artist_mbids','artist_mbid'],track:['recording','recording_mbids','recording_mbid']};
 export function textScore(item,query,type){const q=api.normalize(query),title=api.normalize(type==='artist'?item.name:item.title);if(!q)return 0;const artist=api.normalize(item.artist||api.artistName(item));const aliases=(item.aliases||[]).map(a=>api.normalize(a.name));const names=[title,...aliases];let score=names.some(n=>n===q)?120:names.some(n=>n.startsWith(q))?100:names.some(n=>n.includes(q))?75:0;const words=q.split(/\s+/).filter(Boolean);score=Math.max(score,words.filter(w=>(title+' '+artist).includes(w)).length/words.length*60);if(artist===q)score=Math.max(score,100);else if(artist.includes(q))score=Math.max(score,65);return score+Number(item.score||0)*.08}
 export function rank(items,query,type,sort='smart'){return items.slice().sort((a,b)=>{const popularity=x=>Math.log10(1+(x.listeners||0))*12;const penalty=x=>type==='album'&&(x.secondary||[]).some(t=>['Live','Compilation','Remix'].includes(t))?13:0;const score=x=>textScore(x,query,type)+popularity(x)-penalty(x);if(sort==='year')return Number(b.year||0)-Number(a.year||0)||score(b)-score(a);if(sort==='rating'){const r=x=>x.rating?.['votes-count']?Number(x.rating.value):-1;return r(b)-r(a)||(b.rating?.['votes-count']||0)-(a.rating?.['votes-count']||0)||score(b)-score(a)}if(sort==='popular')return popularity(b)-popularity(a)||score(b)-score(a);return score(b)-score(a)})}
