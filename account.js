@@ -3,6 +3,7 @@ export const SUPABASE_URL='https://odtbtugzilxsfqxlpofq.supabase.co';
 export const PUBLISHABLE_KEY='sb_publishable_ch-7C1ihpZRrxEhXFqV1xA_hXPwq61S';
 const {createClient}=window.supabase;
 export const recoveryReturn=new URLSearchParams(location.hash.slice(1)).get('type')==='recovery';
+export const recoveryError=new URLSearchParams(location.hash.slice(1)).has('error');
 export const client=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{storageKey:'toneary-auth-v1',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let user=null,notify=()=>{},statusNotify=()=>{};
 async function rest(uid,path,options={}){const {data:{session},error}=await client.auth.getSession();if(error||!session||session.user.id!==uid)throw Error('Η σύνδεσή σου έληξε. Συνδέσου ξανά.');const r=await fetch(SUPABASE_URL+'/rest/v1/'+path,{...options,headers:{apikey:PUBLISHABLE_KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json',...options.headers},signal:AbortSignal.timeout(20000)});if(!r.ok){const data=await r.json().catch(()=>({}));throw Error(data.message||'Δεν ολοκληρώθηκε ο συγχρονισμός.')}return r.status===204?null:r.json()}
@@ -14,7 +15,9 @@ export async function initAccount({onLibrary,onStatus,onUser}){notify=onLibrary;
 }
 export async function login(email,password){const{error}=await client.auth.signInWithPassword({email,password});if(error)throw Error(authMessage(error))}
 export async function signup(email,password){const{data,error}=await client.auth.signUp({email,password});if(error){if(error.code==='user_already_exists'||/already registered/i.test(error.message)){try{await login(email,password);return true}catch{const e=Error('Αυτό το email έχει ήδη λογαριασμό στις εφαρμογές μας. Χρησιμοποίησε τον υπάρχοντα κωδικό ή επίλεξε «Ξέχασα τον κωδικό».');e.code='existing_account';throw e}}throw Error(authMessage(error))}return!!data.session}
-export async function requestRecovery(email){const{error}=await client.auth.resetPasswordForEmail(email,{redirectTo:new URL('./',location.href).href.split('#')[0]});if(error)throw Error(authMessage(error))}
+// The shared project's existing allowed origin hosts a dedicated, fixed-destination callback.
+export const RECOVERY_CALLBACK='https://mediterraneohospital.github.io/mediprice/toneary-recovery.html';
+export async function requestRecovery(email){const{error}=await client.auth.resetPasswordForEmail(email,{redirectTo:RECOVERY_CALLBACK});if(error)throw Error(authMessage(error))}
 export async function verifyRecovery(value,email){let options;try{const url=new URL(value);if(url.origin!==SUPABASE_URL||url.pathname!=='/auth/v1/verify'||url.searchParams.get('type')!=='recovery')throw Error();options={token_hash:url.searchParams.get('token'),type:'recovery'};if(!options.token_hash)throw Error()}catch{if(!/^\d{6,8}$/.test(value))throw Error('Επικόλλησε ολόκληρο τον σύνδεσμο επαναφοράς από το email ή τον κωδικό του email.');options={email,token:value,type:'recovery'}}const{error}=await client.auth.verifyOtp(options);if(error)throw Error('Ο σύνδεσμος έληξε ή δεν είναι έγκυρος. Ζήτησε νέο email.')}
 export async function updatePassword(password){const{error}=await client.auth.updateUser({password});if(error)throw Error(authMessage(error))}
 export async function logout(){await sync.sync();const{error}=await client.auth.signOut({scope:'local'});if(error)throw Error(authMessage(error))}

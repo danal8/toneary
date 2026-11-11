@@ -22,11 +22,11 @@ export async function find(query,type,offset=0,filters={}){let q;
 }
 export async function artistSnapshots(artists){if(!artists.length)return new Map();try{const r=await fetch(POPULARITY_URL,{method:'POST',headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+PUBLIC_FUNCTION_JWT,'Content-Type':'application/json'},body:JSON.stringify({type:'snapshots',artists:artists.slice(0,12).map(({id,name,type})=>({id,name,type}))}),signal:AbortSignal.timeout(14000)});if(!r.ok)return new Map();return new Map(Object.entries(await r.json()))}catch{return new Map()}}
 export async function hydrateRatings(items,onProgress=()=>{},isCurrent=()=>true){
-  let checked=0;
-  for(const item of items){
-    if(!isCurrent())break;
-    if(!item.rating){try{const a=await api.mb('release-group/'+item.id,{inc:'ratings'});item.rating=a.rating||{'votes-count':0,value:null}}catch{item.rating={'votes-count':0,value:null}}}
-    checked++;onProgress(checked,items.length);
-  }
-  return items;
+ let checked=0;const finish=item=>{checked++;onProgress(checked,items.length)};
+ for(const item of items){if(!item.rating)item.rating=api.savedRating(item.id);if(item.rating){api.cacheRating(item.id,item.rating);finish(item)}}
+ // A browse response includes ratings for up to 100 albums, so repeated artists need one request.
+ const groups=new Map();for(const item of items.filter(a=>!a.rating&&a.artistId)){if(!groups.has(item.artistId))groups.set(item.artistId,[]);groups.get(item.artistId).push(item)}
+ for(const [artist,targets] of groups){if(!isCurrent())return items;if(targets.length<2)continue;try{const data=await api.mb('release-group/',{artist,type:'album|ep',limit:100,inc:'ratings'});const map=new Map();for(const a of data['release-groups']||[]){if(a.rating){api.cacheRating(a.id,a.rating);map.set(a.id,a.rating)}}for(const item of targets){if(map.has(item.id)){item.rating=map.get(item.id);finish(item)}}}catch{}}
+ for(const item of items){if(!isCurrent())break;if(item.rating)continue;try{const a=await api.mb('release-group/'+item.id,{inc:'ratings'});if(a.rating){item.rating=a.rating;api.cacheRating(item.id,a.rating)}}catch{item.ratingError=true}finish(item)}
+ return items;
 }
