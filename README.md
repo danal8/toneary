@@ -55,3 +55,5 @@ Disposable public metadata caches are capped at approximately 750,000 characters
 See [LYRICS-SOURCES.md](LYRICS-SOURCES.md) for verified examples and professional lyrics/credits options; no paid provider is currently active.
 
 Personal sessions, guest/account libraries and durable outboxes now use IndexedDB, separate from localStorage’s small per-origin limit. Existing Toneary personal keys are copied transactionally before their legacy values are removed. Auth writes await commit, sync waits for queued personal storage writes before upload and before reporting saved. Public metadata caches remain disposable and bounded in localStorage.
+
+Artist and band hearts are available on artist pages, search results and the saved-artists section. They share the private sync/outbox via typed library records (`album.kind: artist`), while legacy album records stay unchanged. Backups v2 preserve both kinds and v1 imports remain supported. Explicit artist likes have double genre weight and stronger artist affinity than album-derived preferences, without replacing the visible discovery grid. No database permissions or authentication settings are changed.
