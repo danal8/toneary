@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="el">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#171919"><meta name="description" content="Toneary — Ανακάλυψε δίσκους, καλλιτέχνες, στίχους και τη μουσική που θα αγαπήσεις.">
+  <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/logo.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./assets/icon-192.png">
+  <link rel="stylesheet" href="./style.css"><title>Toneary — Ο κόσμος των δίσκων σου</title>
+</head>
+<body>
+  <a href="#main" class="skip">Στο περιεχόμενο</a>
+  <header class="topbar"><div class="top-inner">
+    <a class="brand" href="#/" aria-label="Toneary αρχική"><img src="./assets/icon-192.png" width="42" height="42" alt=""><span>toneary<span class="brand-dot">.</span></span></a>
+    <nav aria-label="Κύρια πλοήγηση"><a href="#/" data-nav="home">Ανακάλυψη</a><a href="#/library" data-nav="library">Η δισκοθήκη μου <span id="library-count"></span></a></nav>
+    <div class="header-actions"><button id="install" class="button ghost" hidden>Εγκατάσταση</button><button id="about" class="icon-button" aria-label="Σχετικά με το Toneary">ⓘ</button></div>
+  </div></header>
+  <main id="main" tabindex="-1"></main>
+  <footer><a class="footer-brand" href="#/">toneary.</a><span>Για τη μουσική που αξίζει να γνωρίσεις.</span><button id="sources">Πηγές & δεδομένα</button></footer>
+  <dialog id="info-dialog" aria-labelledby="info-title"><button class="dialog-close icon-button" aria-label="Κλείσιμο">×</button><h2 id="info-title">Η μουσική, λίγο πιο κοντά.</h2><p>Το Toneary είναι ένας δωρεάν οδηγός δίσκων, καλλιτεχνών και τραγουδιών. Δεν απαιτεί λογαριασμό.</p><h3>Οι πηγές μας</h3><p><a href="https://musicbrainz.org" target="_blank" rel="noopener noreferrer">MusicBrainz</a>: δισκογραφίες, στοιχεία, συντελεστές, genres και βαθμολογίες κοινότητας. <a href="https://coverartarchive.org" target="_blank" rel="noopener noreferrer">Cover Art Archive</a>: εξώφυλλα. <a href="https://www.discogs.com" target="_blank" rel="noopener noreferrer">Discogs</a>: πρόσθετες βαθμολογίες, όταν υπάρχει αντιστοίχιση έκδοσης. <a href="https://lrclib.net" target="_blank" rel="noopener noreferrer">LRCLIB</a>: διαθέσιμοι στίχοι. <a href="https://wikipedia.org" target="_blank" rel="noopener noreferrer">Wikipedia / Wikimedia</a>: βιογραφίες και εικόνες με αναφορά πηγής.</p><p>Οι βαθμολογίες εμφανίζονται μόνο όταν υπάρχουν πραγματικές ψήφοι. Κάθε υπηρεσία έχει διαφορετική κάλυψη· η απουσία στοιχείων δεν αποτελεί μηδενική βαθμολογία.</p><h3>Η προσωπική σου δισκοθήκη</h3><p>Αγαπημένα, λίστα ακρόασης, σημειώσεις και προσωπικές βαθμολογίες αποθηκεύονται μόνο σε αυτόν τον browser. Κάνε εξαγωγή για αντίγραφο ασφαλείας. Δεν υπάρχει συγχρονισμός μεταξύ συσκευών.</p><h3>Εγκατάσταση</h3><p>Σε Android / Chrome πάτησε «Εγκατάσταση» όταν εμφανιστεί ή επίλεξε το μενού του browser → Εγκατάσταση εφαρμογής. Σε iPhone: Safari → Κοινή χρήση → Προσθήκη στην οθόνη αφετηρίας.</p><p class="muted">Τα μεταδεδομένα MusicBrainz διατίθενται σύμφωνα με τις <a href="https://musicbrainz.org/doc/About/Data_License" target="_blank" rel="noopener noreferrer">άδειες CC0 / CC BY-NC-SA</a>. Τα εξώφυλλα και οι στίχοι ανήκουν στους δικαιούχους τους. Το app προορίζεται για μη εμπορική χρήση.</p></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.js"></script>
+</body></html>

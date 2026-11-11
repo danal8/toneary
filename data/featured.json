@@ -1,0 +1,178 @@
+[
+  {
+    "id": "1b022e01-4da6-387b-8658-8678046e4cef",
+    "title": "Nevermind",
+    "artist": "Nirvana",
+    "artistId": "5b11f4ce-a62d-471e-81fc-a69a8278c7da",
+    "year": "1991",
+    "date": "1991-09-24",
+    "type": "Album",
+    "secondary": [],
+    "tags": [
+      "grunge",
+      "alternative rock",
+      "rock",
+      "punk rock"
+    ],
+    "cover": "./assets/covers/1b022e01-4da6-387b-8658-8678046e4cef.jpg",
+    "greek": false,
+    "coverSource": "https://en.wikipedia.org/wiki/Nevermind"
+  },
+  {
+    "id": "3d00fb45-f8ab-3436-a8e1-b4bfc4d66913",
+    "title": "Master of Puppets",
+    "artist": "Metallica",
+    "artistId": "65f4f0c5-ef9e-490c-aee3-909e7ae6b2ab",
+    "year": "1986",
+    "date": "1986-03-03",
+    "type": "Album",
+    "secondary": [],
+    "tags": [
+      "thrash metal",
+      "heavy metal",
+      "metal",
+      "political"
+    ],
+    "cover": "./assets/covers/3d00fb45-f8ab-3436-a8e1-b4bfc4d66913.jpg",
+    "greek": false,
+    "coverSource": "https://en.wikipedia.org/wiki/Master%20of%20Puppets"
+  },
+  {
+    "id": "b1392450-e666-3926-a536-22c65f834433",
+    "title": "OK Computer",
+    "artist": "Radiohead",
+    "artistId": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+    "year": "1997",
+    "date": "1997-05-21",
+    "type": "Album",
+    "secondary": [],
+    "tags": [
+      "alternative rock",
+      "art rock",
+      "rock",
+      "atmospheric"
+    ],
+    "cover": "./assets/covers/b1392450-e666-3926-a536-22c65f834433.png",
+    "greek": false,
+    "coverSource": "https://en.wikipedia.org/wiki/OK%20Computer"
+  },
+  {
+    "id": "f50fbcb4-bfcd-3784-b4c9-44f4793e66b2",
+    "title": "Toxicity",
+    "artist": "System of a Down",
+    "artistId": "cc0b7089-c08d-4c10-b6b0-873582c17fd6",
+    "year": "2001",
+    "date": "2001-08-27",
+    "type": "Album",
+    "secondary": [],
+    "tags": [
+      "alternative metal",
+      "metal",
+      "nu metal",
+      "rock"
+    ],
+    "cover": "./assets/covers/f50fbcb4-bfcd-3784-b4c9-44f4793e66b2.jpg",
+    "greek": false,
+    "coverSource": "https://en.wikipedia.org/wiki/Toxicity%20(album)"
+  },
+  {
+    "id": "c7448c63-1b33-3b0d-be31-e95c18b5ae06",
+    "title": "Κεφάλι γεμάτο χρυσάφι",
+    "artist": "Τρύπες",
+    "artistId": "81588b8f-043b-4560-b31c-e5b97497611c",
+    "year": "1996",
+    "date": "1996-05-20",
+    "type": "Album",
+    "secondary": [],
+    "tags": [
+      "rock",
+      "alternative rock",
+      "greek rock"
+    ],
+    "cover": "https://coverartarchive.org/release-group/c7448c63-1b33-3b0d-be31-e95c18b5ae06/front-500",
+    "greek": true
+  },
+  {
+    "id": "494bf606-d2f7-36d0-8340-eadad8601d2b",
+    "title": "Disintegration",
+    "artist": "The Cure",
+    "artistId": "69ee3720-a7cb-4402-b48d-a02c366f2bcf",
+    "year": "1989",
+    "date": "1989-05-01",
+    "type": "Album",
+    "secondary": [],
+    "tags": [
+      "gothic rock",
+      "alternative rock",
+      "post-punk",
+      "new wave"
+    ],
+    "cover": "./assets/covers/494bf606-d2f7-36d0-8340-eadad8601d2b.jpg",
+    "greek": false,
+    "coverSource": "https://en.wikipedia.org/wiki/Disintegration%20(The%20Cure%20album)"
+  },
+  {
+    "id": "c32e4a4d-64cc-4bf9-91ec-73511ebf44c0",
+    "title": "Το χαμόγελο της Τζοκόντας",
+    "artist": "Μάνος Χατζιδάκις",
+    "artistId": "e34c6bac-7b2b-4898-a488-81792da6aca3",
+    "year": "1965",
+    "date": "1965",
+    "type": "Album",
+    "secondary": [],
+    "tags": [
+      "classical",
+      "modern classical"
+    ],
+    "cover": "./assets/covers/c32e4a4d-64cc-4bf9-91ec-73511ebf44c0.jpg",
+    "greek": true,
+    "coverSource": "https://en.wikipedia.org/wiki/Gioconda's%20Smile"
+  },
+  {
+    "id": "765ab0f2-15ab-3c66-bd6c-04c528a73b9d",
+    "title": "Έγινε η απώλεια συνήθειά μας",
+    "artist": "Διάφανα Κρίνα",
+    "artistId": "db780df0-d59c-40ff-9e62-1f3a2a657203",
+    "year": "1996",
+    "date": "1996",
+    "type": "Album",
+    "secondary": [],
+    "tags": [],
+    "cover": "https://coverartarchive.org/release-group/765ab0f2-15ab-3c66-bd6c-04c528a73b9d/front-500",
+    "greek": true
+  },
+  {
+    "id": "41d31668-8ec9-4d99-8659-ec1ff4bff8d6",
+    "title": "Mezzanine Live Royal Albert Hall 1998",
+    "artist": "Massive Attack",
+    "artistId": "10adbe5e-a2c0-4bf3-8249-2b4cbf6e6ca8",
+    "year": "1998",
+    "date": "1998",
+    "type": "Album",
+    "secondary": [
+      "Live"
+    ],
+    "tags": [],
+    "cover": "https://coverartarchive.org/release-group/41d31668-8ec9-4d99-8659-ec1ff4bff8d6/front-500",
+    "greek": false
+  },
+  {
+    "id": "1a272023-10d3-38ee-bab3-317b55fcc21d",
+    "title": "Wish You Were Here",
+    "artist": "Pink Floyd",
+    "artistId": "83d91898-7763-47d7-b03b-b92132375c47",
+    "year": "1975",
+    "date": "1975-09-12",
+    "type": "Album",
+    "secondary": [],
+    "tags": [
+      "progressive rock",
+      "art rock",
+      "psychedelic rock",
+      "rock"
+    ],
+    "cover": "./assets/covers/1a272023-10d3-38ee-bab3-317b55fcc21d.png",
+    "greek": false,
+    "coverSource": "https://en.wikipedia.org/wiki/Wish%20You%20Were%20Here%20(Pink%20Floyd%20album)"
+  }
+]
