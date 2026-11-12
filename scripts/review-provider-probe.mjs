@@ -1,0 +1,6 @@
+const urls=[
+ 'https://aoty.edideaur.works/album?artist=Jethro%20Tull&name=Rock%20Island&minimal=true',
+ 'https://www.avopolis.gr/component/finder/search?q='+encodeURIComponent('Διάφανα Κρίνα'),
+ 'https://www.avopolis.gr/albums/greek-albums/23481-2011-02-26-14-46-33-sp-2132621059',
+ 'https://en.wikipedia.org/w/api.php?action=parse&page=Rock_Island_(Jethro_Tull_album)&prop=text&format=json'];
+for(const url of urls){try{const r=await fetch(url,{headers:{'User-Agent':'Toneary/1.5 (https://github.com/danal8/toneary)'},signal:AbortSignal.timeout(12000)});const t=await r.text();console.log('PROBE',r.status,r.url,'bytes',t.length);if(url.includes('aoty.')){try{const d=JSON.parse(t);console.log(JSON.stringify(d,(k,v)=>['text','popularUserReviews','recentUserReviews','tracklist','moreAlbums','similarAlbums','comments','cover','artistImage'].includes(k)?undefined:v).slice(0,6500))}catch{console.log(t.slice(0,400))}}else if(url.includes('avopolis')){console.log('TITLE',t.match(/<title[^>]*>[\s\S]*?<\/title>/i)?.[0]);console.log('LINKS',t.match(/href=["'][^"']*(?:\/albums\/|finder|search)[^"']*["']/gi)?.slice(0,35));console.log('DATA',t.match(/.{0,150}(?:Βαθμολογία|Καλλιτέχνης|search-query|searchword|Κρίνα).{0,250}/g)?.slice(0,12))}else console.log(t.slice(0,500));}catch(e){console.log('ERROR',e.message)}}
