@@ -41,13 +41,26 @@ jobs:
           name: album-review-layout
           path: _qa/
           if-no-files-found: ignore
+      - name: Verify genre ranking and selector
+        if: contains(github.event.head_commit.message, '[genre-check]')
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node scripts/genre-ui-smoke.mjs
+      - name: Save genre verification
+        if: always() && contains(github.event.head_commit.message, '[genre-check]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: genre-layout
+          path: _qa/
+          if-no-files-found: ignore
       - uses: actions/configure-pages@v5
         with:
           enablement: true
       - name: Prepare static site
         run: |
           mkdir -p _site
-          cp index.html style.css app.js api.js audience.js reviews.js public-config.js account.js account-ui.js sync-store.js storage.js private-store.js credits.js artist-library.js search.js ui-search.js discovery.js sw.js manifest.webmanifest .nojekyll _site/
+          cp index.html style.css app.js api.js audience.js reviews.js genres.js public-config.js account.js account-ui.js sync-store.js storage.js private-store.js credits.js artist-library.js search.js ui-search.js discovery.js sw.js manifest.webmanifest .nojekyll _site/
           cp -r assets data vendor _site/
       - uses: actions/upload-pages-artifact@v3
         with:
