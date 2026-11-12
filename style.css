@@ -100,3 +100,45 @@ footer{border-top:1px solid var(--line);max-width:1284px;margin:auto;padding:26p
 .bio-toggle:hover{text-decoration:underline}
 .bio-toggle[hidden]{display:none}
 @media(max-width:760px){#artist-bio .bio-copy{-webkit-line-clamp:5}#artist-bio .bio-copy.is-expanded{-webkit-line-clamp:unset}}
+
+/* Mobile detail headers: full-width controls instead of a narrow second column. */
+@media(max-width:760px){
+ .breadcrumbs .back{margin:16px 0}
+ .detail-hero{grid-template-columns:88px minmax(0,1fr);gap:5px 14px;align-items:start;padding:4px 0 18px}
+ .detail-hero>div:last-child{display:contents}
+ .detail-hero>div:first-child{grid-column:1;grid-row:1/5;min-width:0}
+ .detail-hero>.artist-avatar{width:88px;height:88px;grid-column:1;grid-row:1/5;font-size:38px}
+ .detail-hero .eyebrow{grid-column:2;font-size:9px;align-self:end}
+ .detail-hero h1{grid-column:2;font-size:24px;line-height:1.17;margin:0;overflow-wrap:anywhere}
+ .detail-hero .artist-link{grid-column:2;font-size:14px;margin:2px 0}
+ .detail-hero .detail-meta{grid-column:2;gap:3px 9px;font-size:11px;line-height:1.45;margin:0}
+ .detail-hero .tags{grid-column:1/-1;display:flex;flex-wrap:nowrap;gap:6px;min-width:0;max-width:100%;overflow-x:auto;margin:8px 0 4px;padding:0 0 5px;scrollbar-width:thin}
+ .detail-hero .tag{flex:0 0 auto;white-space:nowrap;font-size:11px;padding:5px 8px}
+ .detail-hero .detail-actions,.detail-hero .artist-actions{grid-column:1/-1;display:flex;flex-wrap:nowrap;gap:7px;align-items:stretch;min-width:0;margin:4px 0 0;padding:0}
+ .detail-hero .detail-actions>.button,.detail-hero .artist-actions>.button,.detail-hero .spotify-links{flex:1;min-width:0}
+ .detail-hero .spotify-links{display:flex}
+ .detail-hero .button{min-height:40px;padding:8px 9px;font-size:11px;gap:5px;white-space:nowrap}
+ .detail-hero .spotify-links .button{width:100%;font-size:0;gap:5px}
+ .detail-hero .spotify-links .button:after{content:'Spotify';font-size:12px}
+ .detail-hero .artist-actions [data-save-artist]{font-size:0;gap:0}
+ .detail-hero .artist-actions [data-save-artist]:after{content:'♡ Αγαπημένο';font-size:12px}
+ .detail-hero .artist-actions [data-save-artist][aria-pressed="true"]:after{content:'♥ Αγαπημένο'}
+ .artist-header .source-details{margin-top:5px;font-size:9px}
+ #artist-bio .bio-copy{-webkit-line-clamp:3;margin:0 0 4px;line-height:1.65}
+ #artist-bio .bio-copy.is-expanded{-webkit-line-clamp:unset}
+ #artist-bio .source-details{margin-top:7px}
+ #artist-bio+.section-head{flex-wrap:wrap;align-items:center;gap:10px;margin:22px 0 14px}
+ #artist-bio+.section-head h2{font-size:22px}
+ #artist-bio+.section-head .toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:100%;gap:8px}
+ #artist-bio+.section-head .toolbar select{width:100%;min-width:0;font-size:12px;padding:8px;min-height:38px}
+ .album-reviews{padding:15px 0;margin-bottom:4px}
+ .reviews-heading h2{margin-bottom:9px}
+ .reviews-status{font-size:13px;line-height:1.5}
+ .community-reviews{margin-top:10px;padding-top:10px}
+}
+@media(max-width:360px){
+ .detail-hero{grid-template-columns:76px minmax(0,1fr);gap:5px 11px}
+ .detail-hero>.artist-avatar{width:76px;height:76px}
+ .detail-hero h1{font-size:22px}
+ .detail-hero .button{padding:8px 6px;font-size:10px}
+}
