@@ -64,3 +64,30 @@ footer{border-top:1px solid var(--line);max-width:1284px;margin:auto;padding:26p
 @media(max-width:760px){.critic-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.critic-card{padding:14px}.critic-score{font-size:27px}.critic-source{font-size:13px}.reviews-heading h2{font-size:18px}}
 
 .breadcrumbs{flex-wrap:wrap;gap:0 20px}.breadcrumbs .back{max-width:100%;overflow-wrap:anywhere}#discovery .section-head{align-items:center;flex-wrap:wrap}#discovery [data-refresh-recommendations]{white-space:nowrap}
+
+/* More readable search results, with music-player sized text. */
+#results .artist-result{gap:20px;padding:22px 0}
+#results .artist-result .artist-avatar{width:80px;height:80px}
+#results .artist-result h3{font-size:24px;line-height:1.3;margin-bottom:7px}
+#results .artist-result p{font-size:14px;line-height:1.6}
+#results .artist-result p.artist-snapshot{font-size:14px;line-height:1.65;max-width:850px}
+#results .artist-result-copy small{font-size:12px;margin-top:7px}
+#results .album-card h3{font-size:16px;line-height:1.45}
+#results .album-card .artist-name{font-size:14px}
+#results .card-bottom{font-size:12px}
+#results .rating-votes{font-size:11px}
+#results .track-title{font-size:16px;line-height:1.5;overflow-wrap:anywhere}
+#results .track-title .track-subtitle{display:block;font-size:14px;margin-top:3px}
+#results .track-number,#results .track-duration{font-size:14px}
+#results .section-count{font-size:12px}
+@media(max-width:760px){
+ #results .artist-result{gap:15px;padding:19px 0}
+ #results .artist-result .artist-avatar{width:70px;height:70px}
+ #results .artist-result h3{font-size:20px}
+ #results .artist-result p,#results .artist-result p.artist-snapshot{font-size:13px}
+ #results .artist-result-copy small{font-size:12px}
+ #results .album-card h3{font-size:15px}
+ #results .album-card .artist-name{font-size:13px}
+ #results .card-bottom{font-size:11px}
+ #results .track-title .track-subtitle{font-size:13px}
+}
