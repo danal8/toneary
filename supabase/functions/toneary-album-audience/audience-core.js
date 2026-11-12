@@ -9,7 +9,7 @@ export function lastfmPage(html,artist,title){
  if(u.hostname!=='www.last.fm'||parts.length!==3||parts[0]!=='music'||!sameAlbum(parts[1],artist)||!sameAlbum(parts[2],title))return null;
  // Read only the header totals; never track-list listeners or rounded K/M display values.
  const header=html.split(/class=["'][^"']*chartlist/i)[0].slice(0,180000);
- const stat=label=>{const i=header.search(new RegExp('>\\s*'+label+'\\s*<','i'));if(i<0)return null;const part=header.slice(i,i+2000);const abbr=part.match(/<abbr\b[^>]*title=["']([\d, ]+)["']/i);if(abbr)return countValue(abbr[1]);const display=part.match(/class=["'][^"']*header-metadata-display[^"']*["'][^>]*>\s*([\d, ]+)\s*</i);return display?countValue(display[1]):null};
+ const stat=label=>{const i=header.search(new RegExp('>\\s*'+label+'\\s*<','i'));if(i<0)return null;const part=header.slice(i,i+2000);const display=part.match(/class=["'][^"']*header-metadata-display[^"']*["'][^>]*>([\s\S]*?)<\/(?:p|div|span)>/i);if(!display)return null;const abbr=display[1].match(/<abbr\b[^>]*title=["']([\d, ]+)["']/i);return countValue(abbr?abbr[1]:display[1].replace(/<[^>]*>/g,''))};
  const listeners=stat('Listeners'),listens=stat('Scrobbles');
  return listeners>0?{source:'Last.fm',listeners,listens,url:u.href}:null;
 }
