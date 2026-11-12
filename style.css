@@ -49,3 +49,16 @@ footer{border-top:1px solid var(--line);max-width:1284px;margin:auto;padding:26p
 .audience-values span{font-size:13px;color:var(--muted)}
 .album-audience .audience-note{color:var(--muted);font-size:12px;max-width:850px;margin:16px 0 0;line-height:1.7}
 @media(max-width:760px){.detail-columns .track-title{font-size:16px}.detail-columns .track{gap:8px;grid-template-columns:20px minmax(0,1fr) 40px 28px}.detail-columns .lyrics{font-size:16px}.detail-hero .detail-meta{font-size:12px}.detail-hero .tag{font-size:11px}.audience-values{gap:18px 25px}.audience-values strong{font-size:22px}}
+
+.album-reviews{padding:24px 0 26px;border-top:1px solid var(--line);margin-bottom:12px}
+.reviews-heading h2{font-size:19px;margin-bottom:18px;letter-spacing:-.02em}
+.critic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.critic-card{display:flex;flex-direction:column;gap:7px;padding:17px 18px;border:1px solid var(--line);border-radius:6px;background:var(--surface);min-width:0}
+.critic-card:hover{border-color:var(--muted)}.critic-score{font-size:29px;line-height:1.2;color:var(--text);font-weight:600;font-family:Manrope,sans-serif}
+.critic-score small{font-size:14px;font-weight:400;color:var(--muted);margin-left:3px}.critic-source{font-size:14px;line-height:1.45}.critic-link{font-size:12px;color:var(--soft);margin-top:auto;padding-top:4px}
+.reviews-status{font-size:14px;color:var(--muted);margin:0}.review-provenance{font-size:12px;color:var(--muted);margin-top:15px}.review-provenance p{font-size:12px;max-width:800px}.review-provenance summary,.community-reviews summary,.extra-audience summary{cursor:pointer}
+.community-reviews{margin-top:17px;padding-top:15px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+.community-grid{display:flex;flex-wrap:wrap;gap:24px;margin-top:15px}.community-grid a{display:grid;gap:5px}.community-grid strong{font-size:22px;color:var(--text)}.community-grid strong small{font-size:12px;color:var(--muted);font-weight:400}.community-grid a>small{font-size:11px}
+.extra-audience{border:1px solid var(--line);border-radius:5px;padding:17px;margin:0 0 22px;font-size:14px}.extra-audience button{margin-top:15px}.extra-audience p{font-size:14px;margin:14px 0 0;line-height:1.7}
+.detail-hero+.album-reviews+.tabs button{font-size:15px}
+@media(max-width:760px){.critic-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.critic-card{padding:14px}.critic-score{font-size:27px}.critic-source{font-size:13px}.reviews-heading h2{font-size:18px}}

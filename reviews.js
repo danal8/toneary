@@ -1,0 +1,22 @@
+import {POPULARITY_URL,PUBLIC_KEY,PUBLIC_FUNCTION_JWT} from './public-config.js?v=7';
+import {writePublic} from './storage.js?v=7';
+const pending=new Map();const cacheKey=id=>'toneary:reviews:v1:'+id;
+export function savedReviews(id){try{const c=JSON.parse(localStorage.getItem(cacheKey(id)));return c&&Date.now()-c.at<86400000?c.data:null}catch{return null}}
+export async function albumReviews(album){
+ const old=savedReviews(album.id);if(old)return old;if(pending.has(album.id))return pending.get(album.id);
+ const pages=[];let wikidata='';
+ for(const r of album.relations||[]){try{const u=new URL(r.url?.resource);if(u.protocol!=='https:')continue;if(u.hostname==='www.wikidata.org')wikidata=u.pathname.match(/Q\d+/)?.[0]||'';if(['en.wikipedia.org','el.wikipedia.org'].includes(u.hostname)&&u.pathname.startsWith('/wiki/'))pages.push({lang:u.hostname.slice(0,2),title:decodeURIComponent(u.pathname.slice(6))})}catch{}}
+ const work=(async()=>{const r=await fetch(POPULARITY_URL.replace(/toneary-popularity$/,'toneary-reviews'),{method:'POST',headers:{'Content-Type':'application/json',apikey:PUBLIC_KEY,Authorization:'Bearer '+PUBLIC_FUNCTION_JWT},body:JSON.stringify({id:album.id,artist:album.artist,title:album.title,year:album.year,wikidata,pages:pages.slice(0,2)}),signal:AbortSignal.timeout(22000)});if(!r.ok)throw Error('Reviews unavailable');const data=await r.json();if(!Array.isArray(data.reviews))throw Error('Invalid reviews');writePublic(localStorage,cacheKey(album.id),JSON.stringify({at:Date.now(),data}));return data})().finally(()=>pending.delete(album.id));pending.set(album.id,work);return work;
+}
+export function reviewsHTML(data,escape,{rating=null,discogs=null,pending=false}={}){
+ const safe=url=>{try{const u=new URL(url);return u.protocol==='https:'?u.href:''}catch{return''}};
+ const items=(data?.reviews||[]).filter(r=>r?.source&&r.score!==null&&r.score!==undefined&&safe(r.url));
+ const critic=items.map(r=>'<a class="critic-card" href="'+escape(safe(r.url))+'" target="_blank" rel="noopener noreferrer"><span class="critic-score">'+escape(r.score)+(r.scale==='letter'?'':'<small>/'+escape(r.scale)+'</small>')+'</span><span class="critic-source">'+escape(r.source)+'</span><span class="critic-link">'+(r.direct?'Η κριτική ↗':'Πηγή βαθμολογίας ↗')+'</span></a>').join('');
+ const community=[];if(Number(rating?.['votes-count'])>=20)community.push({source:'MusicBrainz',score:Number(rating.value).toFixed(2),count:rating['votes-count'],url:'https://musicbrainz.org/release-group/'+data?.id,detail:''});
+ if(Number(discogs?.count)>=20&&safe(discogs.url))community.push({source:'Discogs',score:Number(discogs.average).toFixed(2),count:discogs.count,url:discogs.url,detail:'Συγκεκριμένη έκδοση: '+discogs.edition});
+ return '<div class="reviews-heading"><h2>Κριτικές & βαθμολογίες</h2></div>'+(critic?'<div class="critic-grid">'+critic+'</div>':pending?'<p class="reviews-status" role="status">Αναζητούμε κριτικές για τον δίσκο…</p>':'<p class="reviews-status">'+(data?.unavailable?'Οι πηγές κριτικών δεν είναι διαθέσιμες αυτή τη στιγμή.':'Δεν βρέθηκε επιβεβαιωμένη βαθμολογία κριτικού για αυτόν τον δίσκο.')+'</p>')+
+ (items.some(r=>r.via)?'<details class="review-provenance"><summary>Στοιχεία βαθμολογιών</summary><p>Οι βαθμοί εμφανίζονται στην αρχική κλίμακα κάθε μέσου. Οι βαθμολογίες ξένων μέσων αντλούνται από τον τεκμηριωμένο πίνακα κριτικών της Wikipedia.</p></details>':'')+
+ (community.length?'<details class="community-reviews"><summary>Βαθμολογίες κοινού</summary><div class="community-grid">'+community.map(r=>'<a href="'+escape(safe(r.url))+'" target="_blank" rel="noopener noreferrer"><strong>'+r.score+'<small>/5</small></strong><span>'+r.source+' · '+Number(r.count).toLocaleString('el-GR')+' ψήφοι</span>'+(r.detail?'<small>'+escape(r.detail)+'</small>':'')+'</a>').join('')+'</div></details>':'');
+}
+
+export function extraAudienceHTML(data,escape){const a=data?.audience,c=data?.chart,n=v=>Number(v).toLocaleString('el-GR');return(a?.listeners>0?'<p><strong>'+n(a.listeners)+' ακροατές</strong> στην κοινότητα του '+escape(a.source)+'.'+(a.listens>0?' '+n(a.listens)+' καταγραφές ακρόασης τραγουδιών που ανήκουν στον δίσκο.':'')+'</p><p class="muted">Αφορούν μόνο την κοινότητα της πηγής και δεν είναι συνολικά streams ή ολοκληρωμένες ακροάσεις του άλμπουμ.</p>':'<p class="muted">Δεν υπάρχουν διαθέσιμα στοιχεία ακρόασης.</p>')+(c?'<p><strong>#'+n(c.position)+'</strong> · '+escape(c.source)+' · Ελλάδα'+(c.kind==='sales'?' · chart αγορών':' · chart ακροάσεων')+'</p>':'')}

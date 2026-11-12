@@ -25,13 +25,29 @@ jobs:
       - name: Verify live album audience service
         if: contains(github.event.head_commit.message, '[audience-check]')
         run: node scripts/audience-smoke.mjs
+      - name: Verify live review sources
+        if: contains(github.event.head_commit.message, '[reviews-check]')
+        run: node scripts/reviews-smoke.mjs
+      - name: Verify album review layout
+        if: contains(github.event.head_commit.message, '[reviews-check]')
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node scripts/reviews-ui-smoke.mjs
+      - name: Save layout verification
+        if: always() && contains(github.event.head_commit.message, '[reviews-check]')
+        uses: actions/upload-artifact@v4
+        with:
+          name: album-review-layout
+          path: _qa/
+          if-no-files-found: ignore
       - uses: actions/configure-pages@v5
         with:
           enablement: true
       - name: Prepare static site
         run: |
           mkdir -p _site
-          cp index.html style.css app.js api.js audience.js public-config.js account.js account-ui.js sync-store.js storage.js private-store.js credits.js artist-library.js search.js ui-search.js discovery.js sw.js manifest.webmanifest .nojekyll _site/
+          cp index.html style.css app.js api.js audience.js reviews.js public-config.js account.js account-ui.js sync-store.js storage.js private-store.js credits.js artist-library.js search.js ui-search.js discovery.js sw.js manifest.webmanifest .nojekyll _site/
           cp -r assets data vendor _site/
       - uses: actions/upload-pages-artifact@v3
         with:
