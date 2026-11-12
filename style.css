@@ -62,3 +62,5 @@ footer{border-top:1px solid var(--line);max-width:1284px;margin:auto;padding:26p
 .extra-audience{border:1px solid var(--line);border-radius:5px;padding:17px;margin:0 0 22px;font-size:14px}.extra-audience button{margin-top:15px}.extra-audience p{font-size:14px;margin:14px 0 0;line-height:1.7}
 .detail-hero+.album-reviews+.tabs button{font-size:15px}
 @media(max-width:760px){.critic-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.critic-card{padding:14px}.critic-score{font-size:27px}.critic-source{font-size:13px}.reviews-heading h2{font-size:18px}}
+
+.breadcrumbs{flex-wrap:wrap;gap:0 20px}.breadcrumbs .back{max-width:100%;overflow-wrap:anywhere}#discovery .section-head{align-items:center;flex-wrap:wrap}#discovery [data-refresh-recommendations]{white-space:nowrap}
