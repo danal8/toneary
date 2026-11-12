@@ -1,5 +1,3 @@
-import {avopolisLinks,key} from '../supabase/functions/toneary-reviews/review-core.js';
-const avoQuery='https://www.avopolis.gr/component/finder/search?'+new URLSearchParams({q:'Διάφανα Κρίνα'});const avoHTML=await(await fetch(avoQuery,{signal:AbortSignal.timeout(12000)})).text();console.log('AVOPOLIS_EXACT_CANDIDATES',avopolisLinks(avoHTML,'Διάφανα Κρίνα',"Ό,τι απόμεινε απ' την ευτυχία"));console.log('AVOPOLIS_EXPECTED_ANCHOR',[...avoHTML.matchAll(/<a\b[^>]*href=["'][^"']*23481[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi)].map(m=>({text:m[1],key:key(m[1])})));
 import assert from 'node:assert/strict';
 import {POPULARITY_URL,PUBLIC_KEY,PUBLIC_FUNCTION_JWT} from '../public-config.js';
 const cases=[
