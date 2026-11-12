@@ -91,3 +91,12 @@ footer{border-top:1px solid var(--line);max-width:1284px;margin:auto;padding:26p
  #results .card-bottom{font-size:11px}
  #results .track-title .track-subtitle{font-size:13px}
 }
+
+/* Compact, expandable artist biography across the available page width. */
+#artist-bio{max-width:none;line-height:1.7}
+#artist-bio .bio-copy{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;margin-bottom:8px;overflow-wrap:anywhere}
+#artist-bio .bio-copy.is-expanded{display:block;-webkit-line-clamp:unset;overflow:visible}
+.bio-toggle{padding:4px 0;border:0;background:none;color:var(--text);font:inherit;font-weight:600;cursor:pointer}
+.bio-toggle:hover{text-decoration:underline}
+.bio-toggle[hidden]{display:none}
+@media(max-width:760px){#artist-bio .bio-copy{-webkit-line-clamp:5}#artist-bio .bio-copy.is-expanded{-webkit-line-clamp:unset}}
