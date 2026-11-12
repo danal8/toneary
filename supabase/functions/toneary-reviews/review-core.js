@@ -22,5 +22,5 @@ export function wikiReviews(html,pageURL,artist,title,{linked=false}={}){
  const note=cells[1].match(/href=["']#(cite_note[^"']+)["']/i)?.[1];const reference=refs.get(note)||'';if(!reference)continue;
  const href=[...reference.matchAll(/href=["'](https:[^"']+)["']/gi)].map(m=>m[1].replace(/&amp;/g,'&')).find(u=>!u.includes('web.archive.org')&&!u.includes('wikipedia.org')&&!u.includes('books.google.'));
  out.push({source,score,scale,url:urlSafe(href)||pageURL,direct:!!urlSafe(href),via:'Wikipedia',referenceURL:pageURL+(note?'#'+note:''),kind:'critic'});
- }return [...new Map(out.map(r=>[key(r.source),r])).values()].slice(0,12)
+ }const unique=new Map();for(const r of out)if(!unique.has(key(r.source)))unique.set(key(r.source),r);return [...unique.values()].slice(0,12)
 }
