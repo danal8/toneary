@@ -28,3 +28,24 @@ footer{border-top:1px solid var(--line);max-width:1284px;margin:auto;padding:26p
 .password-control{display:block;position:relative;width:100%;min-width:0}.password-control>input{width:100%;height:45px;padding:10px 94px 10px 12px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--text);font-size:14px}#account-form .password-control>input{padding-right:94px}.password-toggle{position:absolute;right:6px;top:4px;bottom:4px;padding:6px 8px;border:0;background:transparent;color:var(--soft);font-size:11px;cursor:pointer}.password-toggle:hover{text-decoration:underline}
 
 .artist-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.artist-result-row{display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--line)}.artist-result-row>.artist-result{flex:1;min-width:0;border-bottom:0}.artist-save-small{flex-shrink:0;border:1px solid var(--line);width:38px;height:38px}.artist-save-small.is-saved{color:var(--accent);border-color:var(--accent)}.saved-artists{margin-top:32px}.artist-actions .saved{color:var(--accent)}
+
+/* Album reading sizes, close to a music player's 16px track labels. */
+.detail-columns .track-title{font-size:16px;line-height:1.5;overflow-wrap:anywhere}
+.detail-columns .track-number,.detail-columns .track-duration{font-size:14px}
+.detail-columns .track{padding:16px 4px;grid-template-columns:28px minmax(0,1fr) 48px 34px}
+.detail-hero .detail-meta{font-size:14px}.detail-hero .tag{font-size:12px}
+.detail-columns .lyrics{font-size:17px}.detail-columns .song-credits{font-size:14px}
+.detail-columns .credit-person strong,.detail-columns .credit-person>a{font-size:16px}
+.detail-columns .credit-person span,.detail-columns .credit-tracks{font-size:14px}
+.detail-columns .credit-group h3,.detail-columns .sidebar h3{font-size:17px}
+.detail-columns .facts,.detail-columns .review-item p,.detail-columns textarea{font-size:15px}
+.detail-columns .sidebar p{font-size:13px}.detail-columns .notice{font-size:14px}
+.detail-hero+.album-audience+.tabs button{font-size:15px}
+.album-audience{border-top:1px solid var(--line);padding:22px 0 18px;margin-bottom:12px}
+.album-audience h3{font-size:16px;margin-bottom:15px}.album-audience p{font-size:14px;margin-bottom:8px}
+.audience-values{display:flex;flex-wrap:wrap;gap:18px 36px;align-items:start}
+.audience-values>div,.audience-values>a{display:grid;gap:5px}
+.audience-values strong{font-size:24px;font-family:Manrope,sans-serif}
+.audience-values span{font-size:13px;color:var(--muted)}
+.album-audience .audience-note{color:var(--muted);font-size:12px;max-width:850px;margin:16px 0 0;line-height:1.7}
+@media(max-width:760px){.detail-columns .track-title{font-size:16px}.detail-columns .track{gap:8px;grid-template-columns:20px minmax(0,1fr) 40px 28px}.detail-columns .lyrics{font-size:16px}.detail-hero .detail-meta{font-size:12px}.detail-hero .tag{font-size:11px}.audience-values{gap:18px 25px}.audience-values strong{font-size:22px}}

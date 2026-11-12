@@ -22,13 +22,16 @@ jobs:
         with:
           node-version: '22'
       - run: npm run check && npm test
+      - name: Verify live album audience service
+        if: contains(github.event.head_commit.message, '[audience-check]')
+        run: node scripts/audience-smoke.mjs
       - uses: actions/configure-pages@v5
         with:
           enablement: true
       - name: Prepare static site
         run: |
           mkdir -p _site
-          cp index.html style.css app.js api.js public-config.js account.js account-ui.js sync-store.js storage.js private-store.js credits.js artist-library.js search.js ui-search.js discovery.js sw.js manifest.webmanifest .nojekyll _site/
+          cp index.html style.css app.js api.js audience.js public-config.js account.js account-ui.js sync-store.js storage.js private-store.js credits.js artist-library.js search.js ui-search.js discovery.js sw.js manifest.webmanifest .nojekyll _site/
           cp -r assets data vendor _site/
       - uses: actions/upload-pages-artifact@v3
         with:
