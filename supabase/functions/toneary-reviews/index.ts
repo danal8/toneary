@@ -6,7 +6,7 @@ function json(data,status=200){return new Response(JSON.stringify(data),{status,
 async function get(url,timeout=6500){const r=await fetch(url,{headers:ua,signal:AbortSignal.timeout(timeout)});if(!r.ok)throw Error('Upstream unavailable');return r}
 async function avopolis(artist,title){
  const query='"'+artist+'" "'+title+'"';const html=await(await get('https://www.avopolis.gr/component/finder/search?'+new URLSearchParams({q:query}),8000)).text();
- if(html.length>2000000)throw Error('Search too large');const links=avopolisLinks(html,artist,title),reviews=[];
+ if(html.length>2000000)throw Error('Search too large');let links=avopolisLinks(html,artist,title);if(!links.length){const broad=await(await get('https://www.avopolis.gr/component/finder/search?'+new URLSearchParams({q:artist}),6500)).text();if(broad.length<2000000)links=avopolisLinks(broad,artist,title)}const reviews=[];
  for(const url of links){try{const html=await(await get(url,5000)).text();const r=avopolisReview(html,url,artist,title);if(r)reviews.push(r)}catch{}}
  return reviews;
 }
