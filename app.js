@@ -123,7 +123,8 @@ try{const response=await fetch('./data/featured.json');if(!response.ok)throw new
 let bootstrapping=true;
 main.innerHTML=loading('Φορτώνουμε τη δισκοθήκη σου…');
 await mountAccount({toast,onUser:()=>{noteDrafts.clear();const note=$('#personal-note');if(note){note.dataset.dirty='false';note.value=''}},onLibrary:value=>{const changed=JSON.stringify(library)!==JSON.stringify(value);library=value;updateCount();updateFavoriteButtons();if(changed&&!bootstrapping)scheduleRecommendations();if(changed&&!bootstrapping){if(location.hash.startsWith('#/library'))libraryPage(libraryFilter);else if(currentAlbum)renderAlbum();}}});
-await route();bootstrapping=false;
 document.addEventListener('submit',event=>{if(event.target.id==='album-filters'){event.preventDefault();searchUI.applyFilters(event.target)}});
+await route();bootstrapping=false;
+
 const coverSources=featured.filter(a=>a.coverSource);if(coverSources.length)$('#info-dialog').insertAdjacentHTML('beforeend',`<details><summary>Πηγές εξωφύλλων</summary><ul>${coverSources.map(a=>`<li>${external(a.coverSource,escape(a.artist+' — '+a.title))}</li>`).join('')}</ul><p>Μικρές εικόνες για αναγνώριση και σχολιασμό των δίσκων. Τα δικαιώματα παραμένουν στους δημιουργούς και στις δισκογραφικές εταιρείες.</p></details>`);
 if('serviceWorker'in navigator){const hadController=!!navigator.serviceWorker.controller;let replacing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadController||replacing)return;replacing=true;location.reload()});navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{})}

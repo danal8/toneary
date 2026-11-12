@@ -1,7 +1,7 @@
 import {chromium} from 'playwright';import {spawn} from 'node:child_process';import assert from 'node:assert/strict';import {mkdir} from 'node:fs/promises';
-const server=spawn(process.execPath,['scripts/serve.mjs'],{stdio:'inherit'});let browser;
+const server=spawn(process.execPath,['scripts/serve.mjs'],{stdio:'inherit'});let browser,page;
 try{for(let i=0;i<30;i++){try{if((await fetch('http://127.0.0.1:4173/toneary/')).ok)break}catch{}await new Promise(r=>setTimeout(r,200))}
- browser=await chromium.launch({headless:true});const page=await browser.newPage({viewport:{width:1440,height:1000},serviceWorkers:'block'});
+ browser=await chromium.launch({headless:true});page=await browser.newPage({viewport:{width:1440,height:1000},serviceWorkers:'block'});
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const make=(genre,i)=>({id:'aaaaaaaa-aaaa-aaaa-aaaa-'+String(i).padStart(12,'0'),title:genre==='pop'?'Popular pop album':'Indie rock album','first-release-date':'2020','primary-type':'Album','artist-credit':[{name:'Artist',artist:{id:'artist',name:'Artist'}}],tags:[{name:genre,count:10}]});
  await page.route('**/data/popular-albums.json',route=>route.fulfill({json:{items:[]}}));
@@ -13,4 +13,4 @@ try{for(let i=0;i<30;i++){try{if((await fetch('http://127.0.0.1:4173/toneary/'))
  assert.equal(await page.locator('input[name=genre]').count(),0);assert.equal(await page.locator('select[name=sort]').inputValue(),'popular');
  await mkdir('_qa',{recursive:true});await page.screenshot({path:'_qa/genre-desktop.png',fullPage:true});await page.setViewportSize({width:390,height:844});await page.screenshot({path:'_qa/genre-mobile.png',fullPage:true});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  assert.deepEqual(errors,[]);console.log('PASS genre switch pop -> indie rock without deleting text, default popularity, desktop/mobile');
-}finally{await browser?.close();server.kill()}
+}catch(error){console.log('GENRE_UI_FAILURE',await page?.url(),await page?.locator('main').innerText());await mkdir('_qa',{recursive:true});await page?.screenshot({path:'_qa/genre-failure.png',fullPage:true});throw error}finally{await browser?.close();server.kill()}
